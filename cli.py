@@ -1,30 +1,30 @@
 import json
 
 class WiFiChannel:
-    def __init__(self, channel_number, usage, interference, noise, transmission_power, channel_width, frequency_band):
-        self.channel_number = channel_number
+    def __init__(self, channelNumber, usage, interference, noise, transmissionPower, channelWidth, frequencyBand):
+        self.channelNumber = channelNumber
         self.usage = usage
         self.interference = interference
         self.noise = noise
-        self.transmission_power = transmission_power
-        self.channel_width = channel_width
-        self.frequency_band = frequency_band
+        self.transmissionPower = transmissionPower
+        self.channelWidth = channelWidth
+        self.frequencyBand = frequencyBand
 
     def score(self):
         """Calculate a score based on various parameters."""
-        width_factor = 1 if self.channel_width == 20 else 1.5 if self.channel_width == 40 else 2
-        return (-self.usage - self.interference - self.noise + self.transmission_power) * width_factor
+        width_factor = 1 if self.channelWidth == 20 else 1.5 if self.channelWidth == 40 else 2
+        return (-self.usage - self.interference - self.noise + self.transmissionPower) * width_factor
 
-    def update(self, **kwargs):
+    def update(self, **kwArgs):
         """Update channel parameters dynamically."""
-        for key, value in kwargs.items():
+        for key, value in kwArgs.items():
             if hasattr(self, key):
                 setattr(self, key, value)
 
     def __str__(self):
-        return (f"Channel {self.channel_number} ({self.frequency_band}GHz): Usage({self.usage}), "
-                f"Interference({self.interference}), Noise({self.noise}), Transmission Power({self.transmission_power}), "
-                f"Channel Width({self.channel_width}MHz)")
+        return (f"Channel {self.channelNumber} ({self.frequencyBand}GHz): Usage({self.usage}), "
+                f"Interference({self.interference}), Noise({self.noise}), Transmission Power({self.transmissionPower}), "
+                f"Channel Width({self.channelWidth}MHz)")
 
 
 class WiFiAnalyzer:
@@ -32,22 +32,22 @@ class WiFiAnalyzer:
         self.channels = {}
         self.history = []
 
-    def add_or_update_channel(self, channel_number, frequency_band, **kwargs):
+    def add_or_update_channel(self, channelNumber, frequencyBand, **kwArgs):
         """Add or update a WiFi channel with dynamic parameters."""
-        channel_key = (channel_number, frequency_band)
+        channel_key = (channelNumber, frequencyBand)
         if channel_key in self.channels:
-            self.channels[channel_key].update(**kwargs)
-            self.log_action(f"Updated Channel {channel_number} on {frequency_band}GHz.")
+            self.channels[channel_key].update(**kwArgs)
+            self.log_action(f"Updated Channel {channelNumber} on {frequencyBand}GHz.")
         else:
-            self.channels[channel_key] = WiFiChannel(channel_number, frequency_band=frequency_band, **kwargs)
-            self.log_action(f"Added Channel {channel_number} on {frequency_band}GHz.")
+            self.channels[channel_key] = WiFiChannel(channelNumber, frequencyBand=frequencyBand, **kwargs)
+            self.log_action(f"Added Channel {channelNumber} on {frequencyBand}GHz.")
 
-    def remove_channel(self, channel_number, frequency_band):
+    def remove_channel(self, channelNumber, frequencyBand):
         """Remove a channel."""
-        channel_key = (channel_number, frequency_band)
+        channel_key = (channelNumber, frequencyBand)
         if channel_key in self.channels:
             del self.channels[channel_key]
-            self.log_action(f"Removed Channel {channel_number} on {frequency_band}GHz.")
+            self.log_action(f"Removed Channel {channelNumber} on {frequencyBand}GHz.")
 
     def display_channels(self):
         """Display channels sorted by their scores."""
@@ -66,8 +66,8 @@ class WiFiAnalyzer:
             "5GHz": None,
             "6GHz": None
         }
-        for (channel_number, frequency_band), channel in self.channels.items():
-            frequency_key = f"{frequency_band}GHz"
+        for (channelNumber, frequencyBand), channel in self.channels.items():
+            frequency_key = f"{frequencyBand}GHz"
             if best_channels[frequency_key] is None or channel.score() > best_channels[frequency_key].score():
                 best_channels[frequency_key] = channel
         
@@ -111,20 +111,20 @@ def main():
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            channel_number = int(input("Enter channel number: "))
-            frequency_band = float(input("Choose frequency band (2.4, 5, or 6 in GHz): "))
+            channelNumber = int(input("Enter channel number: "))
+            frequencyBand = float(input("Choose frequency band (2.4, 5, or 6 in GHz): "))
             usage = int(input("Enter usage: "))
             interference = int(input("Enter interference: "))
             noise = int(input("Enter noise: "))
-            transmission_power = int(input("Enter transmission power: "))
-            channel_width = int(input("Enter channel width (20, 40, 80, or 160 in MHz): "))
-            analyzer.add_or_update_channel(channel_number, frequency_band, usage=usage, interference=interference, 
-                                           noise=noise, transmission_power=transmission_power, channel_width=channel_width)
+            transmissionPower = int(input("Enter transmission power: "))
+            channelWidth = int(input("Enter channel width (20, 40, 80, or 160 in MHz): "))
+            analyzer.add_or_update_channel(channelNumber, frequencyBand, usage=usage, interference=interference, 
+                                           noise=noise, transmissionPower=transmissionPower, channelWidth=channelWidth)
             
         elif choice == "2":
-            channel_number = int(input("Enter channel number to remove: "))
-            frequency_band = float(input("Enter frequency band for the channel (2.4, 5, or 6 in GHz): "))
-            analyzer.remove_channel(channel_number, frequency_band)
+            channelNumber = int(input("Enter channel number to remove: "))
+            frequencyBand = float(input("Enter frequency band for the channel (2.4, 5, or 6 in GHz): "))
+            analyzer.remove_channel(channelNumber, frequencyBand)
             
         elif choice == "3":
             analyzer.display_channels()
