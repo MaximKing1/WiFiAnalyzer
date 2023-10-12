@@ -1,0 +1,11 @@
+{
+    "(6, 2.4)": {
+        "channelNumber": 6,
+        "usage": -12,
+        "interference": -32,
+        "noise": 12,
+        "transmissionPower": 63,
+        "channelWidth": 80,
+        "frequencyBand": 2.4
+    }
+}
