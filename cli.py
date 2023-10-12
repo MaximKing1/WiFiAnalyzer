@@ -1,5 +1,6 @@
 import json
 
+
 class WiFiChannel:
     """This class represents a WiFi channel."""
 
@@ -67,7 +68,17 @@ class WiFiAnalyzer:
 
     def __init__(self):
         with open("channels.json", "r+", encoding="utf-8") as f:
-            self.channels = json.load(f)
+            loaded_channels = json.load(f)
+
+            # Convert dictionaries back to WiFiChannel objects
+            self.channels = {
+                (
+                    int(key.strip("()").split(", ")[0]),
+                    float(key.strip("()").split(", ")[1]),
+                ): WiFiChannel(**value)
+                for key, value in loaded_channels.items()
+            }
+
         # self.channels = {}
         self.history = []
 
@@ -112,13 +123,16 @@ class WiFiAnalyzer:
 
     def best_channel(self):
         """Determine the best channel based on the current data."""
-        return max(self.channels.values(), key=lambda c: c.score(), default=None)
+        best_channel = max(
+            self.channels.values(), key=lambda c: c.score(), default=None
+        )
+        return best_channel.channelNumber if best_channel else None
 
     def best_channel_per_band(self):
         """Compute the best channel for each frequency band and return as JSON."""
         best_channels = {"2.4GHz": None, "5GHz": None, "6GHz": None}
 
-        for (channelNumber, frequencyBand), channel in self.channels.items():
+        for (_, frequencyBand), channel in self.channels.items():
             frequency_key = f"{frequencyBand}GHz"
             if (
                 best_channels[frequency_key] is None
